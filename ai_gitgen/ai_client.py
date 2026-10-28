@@ -50,8 +50,9 @@ def chat_completion(
             {"role": "user", "content": user},
         ],
         "temperature": temperature,
-        "max_completion_tokens": max_tokens,
-        "response_format": {"type": "json_object"},
+        # OpenAI 호환 프록시/Gemini 등에서도 동작하도록 공통 파라미터만 보낸다.
+        # (response_format 같은 확장 기능은 미지원 엔드포인트가 있어 프롬프트로 JSON을 요구한다)
+        "max_tokens": max_tokens,
     }
     req = urllib.request.Request(
         url=f"{base_url.rstrip('/')}/chat/completions",

@@ -251,7 +251,7 @@ ai-commit-pr-generator/
 | 주제 | 설명 |
 |---|---|
 | REST API 연동 | `urllib`로 `POST /v1/chat/completions`에 JSON 요청을 보냅니다. `Authorization: Bearer <AI_API_KEY>` 헤더로 인증하고, HTTP 상태 코드와 응답의 `error.message`를 읽어 원인별 오류 메시지로 바꿉니다 (`ai_client.py`). |
-| 파라미터 | `temperature`는 무작위성입니다. 커밋 메시지는 일관성이 중요해 0.3을 기본으로 둡니다. `max_tokens`(`max_completion_tokens`)는 응답 길이 상한이고, 부족하면 `finish_reason=length`로 잘린 것을 감지해 안내합니다. |
+| 파라미터 | `temperature`는 무작위성입니다. 커밋 메시지는 일관성이 중요해 0.3을 기본으로 둡니다. `max_tokens`는 응답 길이 상한이고, 부족하면 `finish_reason=length`로 잘린 것을 감지해 안내합니다. |
 | Git 연결 | `subprocess`로 `git status --porcelain --branch`(브랜치, 파일 목록)와 `git diff`(변경 내용)를 실행하고, 결과 텍스트를 프롬프트의 입력으로 넣습니다 (`git_collector.py`). |
-| 프롬프트 설계 | system에는 역할, Conventional Commits/PR 템플릿 규칙, 길이 제한, "diff에 없는 내용 금지", JSON 스키마를 넣습니다. user에는 브랜치, diff 범위, 변경 이유(`--context`), 파일 목록, diff를 넣습니다 (`prompts.py`). `response_format: json_object`로 JSON 응답을 강제합니다. |
+| 프롬프트 설계 | system에는 역할, Conventional Commits/PR 템플릿 규칙, 길이 제한, "diff에 없는 내용 금지", JSON 스키마를 넣습니다. user에는 브랜치, diff 범위, 변경 이유(`--context`), 파일 목록, diff를 넣습니다 (`prompts.py`). OpenAI 호환 프록시에서도 동작하도록 `response_format` 같은 확장 파라미터는 쓰지 않고, 프롬프트로 JSON만 답하게 한 뒤 코드에서 JSON 부분을 추출합니다. |
 | 검증·다듬기 | 모델이 규칙을 어길 수 있으므로 코드에서 길이를 자르고, 섹션/불릿을 보정하고, 최종 결과를 다시 검사해 `OK/WARN`으로 보여 줍니다 (`formatter.py`). |
