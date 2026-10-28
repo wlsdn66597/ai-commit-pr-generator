@@ -7,6 +7,8 @@ git status / git diff 수집 → safe-mode(마스킹·전송 제한) → 프롬�
 → JSON 응답 파싱 → 길이/형식 검증·다듬기 → 구획을 나눠 터미널 출력
 ```
 
+> 📸 실제 실행 결과는 **[평가 항목 1~7 실행 증빙 및 설명](docs/EXECUTION_EVIDENCE.md)**에서 확인할 수 있습니다.
+
 > 생성된 문구는 **초안**입니다. 사용자가 검토한 뒤 직접 커밋하거나 PR에 붙여 넣습니다. (`git push`, GitHub PR 생성 같은 원격 반영 기능은 넣지 않았습니다.)
 
 ---
@@ -78,7 +80,7 @@ python main.py pr --no-safe-mode                        # 마스킹/전송 제�
 |---|---|---|
 | `--model`, `-model` | `gpt-4.1-mini` | 사용할 모델 |
 | `--temperature`, `-temperature` | `0.3` | 0.0~2.0. 낮을수록 같은 입력에 비슷한 결과, 높을수록 표현이 다양해짐 |
-| `--max-tokens`, `-max-tokens` | `800` | 응답 최대 토큰 수. 너무 작으면 응답이 잘려 오류로 안내 |
+| `--max-tokens`, `-max-tokens` | `2000` | 응답 최대 토큰 수. 너무 작으면 응답이 잘려 오류로 안내 |
 | `--safe-mode` / `--no-safe-mode` | 켜짐 | 민감정보 마스킹 + 최대 10개 파일 / 200줄만 전송 |
 | `--context`, `-context` | 없음 | 변경 이유·요구사항 메모를 프롬프트에 추가 |
 | `--base`, `-base` (`pr` 전용) | `main` | PR 비교 기준 브랜치 |
@@ -97,7 +99,7 @@ python main.py pr --no-safe-mode                        # 마스킹/전송 제�
 [INFO] Git status 수집 완료: 3개 파일 변경 감지
 [INFO] Git diff 수집 완료: 128줄 (작업 트리 변경 (staged 없음))
 [INFO] safe-mode ON: 마스킹 api_key 1건 / 제외 파일 1개 / 생략 파일 0개 / 생략 줄 0줄
-[INFO] AI API 요청 중... (model=gpt-4.1-mini, temperature=0.3, max_tokens=800)
+[INFO] AI API 요청 중... (model=gpt-4.1-mini, temperature=0.3, max_tokens=2000)
 [INFO] AI API 호출 횟수: 1회 (입력 1834 토큰 / 출력 121 토큰)
 [DONE] 커밋 메시지 생성 완료
 
@@ -128,7 +130,7 @@ feat: 로그인 입력 검증 및 환경변수 설정 로딩 추가
 [INFO] Git status 수집 완료: 3개 파일 변경 감지
 [INFO] Git diff 수집 완료: 142줄 (main...HEAD 브랜치 커밋)
 [INFO] safe-mode ON: 마스킹 없음 / 제외 파일 0개 / 생략 파일 0개 / 생략 줄 0줄
-[INFO] AI API 요청 중... (model=gpt-4.1-mini, temperature=0.3, max_tokens=800)
+[INFO] AI API 요청 중... (model=gpt-4.1-mini, temperature=0.3, max_tokens=2000)
 [INFO] AI API 호출 횟수: 1회 (입력 1950 토큰 / 출력 210 토큰)
 [DONE] PR 초안 생성 완료
 
@@ -225,7 +227,7 @@ $ python main.py commit            # 네트워크 연결 불가
 - 변경 사항이 없거나 API Key가 없으면 API를 호출하지 않고 끝납니다.
 - 작은 단위로 `git add` 한 뒤 `commit`을 실행하면 diff가 작아져 비용이 줄고, 요약도 정확해집니다.
 - 기본 모델은 비용이 낮은 `gpt-4.1-mini`입니다. 큰 모델은 필요할 때만 `--model`로 지정하세요.
-- `--max-tokens`는 응답 길이 상한이자 비용 상한입니다. 커밋/PR 초안은 기본값 800이면 충분합니다.
+- `--max-tokens`는 응답 길이 상한이자 비용 상한입니다. Gemini 3 같은 추론형 모델은 내부 추론 토큰도 이 한도에 포함되므로 기본값을 2000으로 두었습니다 (800에서는 PR 초안이 잘린 사례가 있었습니다).
 - 429(요청 한도 초과) 오류가 나면 잠시 기다렸다 다시 실행하고, OpenAI 대시보드에서 사용량 한도를 설정해 두는 것을 권장합니다.
 
 ---
