@@ -62,6 +62,9 @@ def parse_json(content: str) -> dict:
     fence = re.match(r"^```(?:json)?\s*([\s\S]*?)\s*```$", text)
     if fence:
         text = fence.group(1)
+    elif not text.startswith("{") and "{" in text:
+        # JSON 앞뒤에 설명 문장이 붙은 경우 첫 '{' ~ 마지막 '}' 구간만 사용
+        text = text[text.find("{"): text.rfind("}") + 1]
     try:
         data = json.loads(text)
     except json.JSONDecodeError as exc:
